@@ -18,7 +18,7 @@ class BluetoothConnection:
         for i in range(99999):
             try:
                 self._socket.connect((self.address, i))
-                self.connected = True
+                self._connected = True
                 
                 return i
             except:
