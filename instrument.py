@@ -33,33 +33,4 @@ class Instrument():
     @staticmethod
     def stopAll():
         simpleaudio.stop_all()
-        
-        
-        
-        
-        
-        
-        
-        
-    # def setAudioBuffer(self):
-    #     return simpleaudio.play_buffer(
-    #         self.audio.raw_data,
-    #         self.audio.channels,
-    #         self.audio.sample_width,
-    #         self.audio.frame_rate
-    #     )
-    
-    # def resetAudioBuffer(self):
-    #     self.audioBuffer = self.setAudioBuffer()
-    
-    
-    # def playWav(self ):
-    #     try:
-    #         self.audioBuffer = self.audio.play()
-    #     except KeyboardInterrupt:
-    #         self.audio.stop()
-        
-
-    #     return
-    
 
