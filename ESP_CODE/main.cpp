@@ -1,6 +1,9 @@
+#include <WiFi.h>
+#include <FirebaseESP32.h>
 #include "esp_bt_main.h"
 #include "esp_bt_device.h"
 #include "BluetoothSerial.h"
+
 
 #define BT1 12
 #define BT2 14
@@ -8,6 +11,15 @@
 #define BT4 26
 #define BT5 25
 #define BT6 33
+
+#define WIFI_NOME ""
+#define WIFI_SENHA ""
+
+#define FB_HOST "" // Link Firebase
+#define FB_AUTH "" // Segredo Firebase
+
+FirebaseJson json;
+FirebaseData firebaseData;
 
 BluetoothSerial SerialBT;
 
@@ -38,12 +50,30 @@ void setup() {
   
   Serial.begin(115200);
   SerialBT.begin("ESP32Bluetooth - Flauta");
+
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect(); // boa prática
+
+  WiFi.begin(WIFI_NOME, WIFI_SENHA);
+
+  Serial.print("Conectando");
+
+  while (WiFi.status() != WL_CONNECTED){
+    Serial.print(".");
+    delay(100);
+  }
+
+  Firebase.begin(FB_HOST, FB_AUTH);
+
+  Firebase.reconnectWiFi(true);
+  Firebase.setReadTimeout(firebaseData, 1000 * 60);
+  Firebase.setwriteSizeLimit(firebaseData, "tiny");
+  
   printAdd();
 }
 
 void loop() {
   byte controlSignal = 0b00000000;
-  
   Serial.println(digitalRead(BT1));
   if (digitalRead(BT1))
     controlSignal |= 0b000001;
@@ -57,6 +87,9 @@ void loop() {
     controlSignal |= 0b010000;
   if (digitalRead(BT6))
     controlSignal |= 0b100000;
+
+    json.set("/Notas");
+    Firebase.updateNode(firebaseData, "/Otamabosch", json);
   
   SerialBT.write(controlSignal);
   delay(10);
