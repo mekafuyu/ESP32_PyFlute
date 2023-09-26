@@ -1,6 +1,6 @@
 from instrument import Instrument
 from bluetoothConnection import BluetoothConnection
-from firebaseConnection import note_ref
+from firebaseConnection import ref
 import notesMap
 
 FLUTE_LIKE_NOTES = {0 : "Dó",
@@ -10,6 +10,16 @@ FLUTE_LIKE_NOTES = {0 : "Dó",
                     15 : "Sol",
                     31 : "Lá",
                     63 : "Si"}
+
+FLUTE_LIKE_NOTES_SHARP = { 63 : "Dó",
+                     62 : "Dó#",
+                     61 : "Ré",
+                     60 : "Ré#",
+                     56 : "Mi",
+                     57 : "Fá",
+                     58 : "Sol",
+                     59 : "Lá",
+                     48 : "Si"}
 
 PIANO_LIKE_NOTES = {1 : "Dó",
                     2 : "Ré",
@@ -21,10 +31,11 @@ PIANO_LIKE_NOTES = {1 : "Dó",
 
 # Select the sounds of Notes:
 #   notesMap.fluteLikeMap    => NOTES = FLUTE_LIKE_NOTES
+#   notesMap.fluteLikeMapSharp => NOTES = FLUTE_LIKE_NOTES_SHARP
 #   notesMap.pianoLikeMap    => NOTES = PIANO_LIKE_NOTES
 #   notesMap.pplFluteLikeMap => NOTES = FLUTE_LIKE_NOTES
 PRESET = notesMap.fluteLikeMapSharp
-NOTES = FLUTE_LIKE_NOTES
+NOTES = FLUTE_LIKE_NOTES_SHARP
 
 BLUETOOTH_ADDRESS = '58:BF:25:9F:6A:86'
 btconn = BluetoothConnection(BLUETOOTH_ADDRESS, 1, 1)
@@ -37,13 +48,18 @@ for note in PRESET:
     flute.addNote(note , PRESET[note])
 
 noteESP = 0
+
 try:
     while(1):
         prevNote = noteESP
         noteESP = list(btconn.getPressedFromBT())[0]
-        
+          
         if (prevNote != noteESP):
-            note_ref.update({ "Nota" : NOTES[noteESP] })
+            try:
+                print(NOTES[noteESP])
+                ref.update({ "Nota" : NOTES[noteESP] })
+            except:
+                pass
 
         if(not flute.isPlaying(noteESP)):
             Instrument.stopAll()
